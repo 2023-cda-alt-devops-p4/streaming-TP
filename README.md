@@ -39,7 +39,11 @@ Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
   `SELECT lastName, firstName, DATE_PART('year', AGE(CURRENT_DATE, birthDate)) AS age FROM actors WHERE DATE_PART('year', AGE(CURRENT_DATE, birthDate)) > 30 ORDER BY lastName, firstName;`
 
 - la liste des acteurs/actrices principaux pour un film donné
-  `SELECT actors.lastName, actors.firstName FROM actors INNER JOIN plays_in ON actors.Id_actors = plays_in.Id_actors INNER JOIN movies ON plays_in.Id_movies = movies.Id_movies WHERE movies.title = 'You Are God (Jestes Bogiem)' AND plays_in.role = 'main_actor';`
+  `SELECT actors.lastName, actors.firstName 
+FROM actors 
+INNER JOIN plays_in ON actors.Id_actors = plays_in.Id_actors 
+INNER JOIN movies ON plays_in.Id_movies = movies.Id_movies 
+WHERE movies.title = 'You Are God (Jestes Bogiem)' AND plays_in.role = 'main_actor';`
 - la liste des films pour un acteur/actrice donné
   `SELECT movies.title FROM movies INNER JOIN plays_in ON movies.Id_movies = plays_in.Id_movies INNER JOIN actors ON plays_in.Id_actors = actors.Id_actors WHERE actors.lastName = 'Brenna';`
 - ajouter un film
