@@ -33,6 +33,7 @@ J'ai crée un container docker auquel j'ai relié une image ( postgres ) obtenu 
 Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
 
 ````SQL
+
 - les titres et dates de sortie des films du plus récent au plus ancien
 
   SELECT title, releaseDate FROM movies ORDER BY releaseDate DESC;
