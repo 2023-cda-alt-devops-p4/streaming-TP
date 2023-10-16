@@ -33,17 +33,21 @@ J'ai crée un container docker auquel j'ai relié une image ( postgres ) obtenu 
 Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
 
 - les titres et dates de sortie des films du plus récent au plus ancien
-  `SELECT title, releaseDate FROM movies ORDER BY releaseDate DESC;`
+
+  SELECT title, releaseDate FROM movies ORDER BY releaseDate DESC;
 
 - les noms, prénoms et âges des acteurs/actrices de plus de 30 ans dans l'ordre alphabétique
-  `SELECT lastName, firstName, DATE_PART('year', AGE(CURRENT_DATE, birthDate)) AS age FROM actors WHERE DATE_PART('year', AGE(CURRENT_DATE, birthDate)) > 30 ORDER BY lastName, firstName;`
+
+  SELECT lastName, firstName, DATE_PART('year', AGE(CURRENT_DATE, birthDate)) AS age FROM actors WHERE DATE_PART('year', AGE(CURRENT_DATE, birthDate)) > 30 ORDER BY lastName, firstName;
 
 - la liste des acteurs/actrices principaux pour un film donné
-  `SELECT actors.lastName, actors.firstName 
-FROM actors 
-INNER JOIN plays_in ON actors.Id_actors = plays_in.Id_actors 
-INNER JOIN movies ON plays_in.Id_movies = movies.Id_movies 
-WHERE movies.title = 'You Are God (Jestes Bogiem)' AND plays_in.role = 'main_actor';`
+
+````SQL
+    SELECT actors.lastName, actors.firstName
+    FROM actors
+    INNER JOIN plays_in ON actors.Id_actors = plays_in.Id_actors
+    INNER JOIN movies ON plays_in.Id_movies = movies.Id_movies
+    WHERE movies.title = 'You Are God (Jestes Bogiem)' AND plays_in.role = 'main_actor';```
 - la liste des films pour un acteur/actrice donné
   `SELECT movies.title FROM movies INNER JOIN plays_in ON movies.Id_movies = plays_in.Id_movies INNER JOIN actors ON plays_in.Id_actors = actors.Id_actors WHERE actors.lastName = 'Brenna';`
 - ajouter un film
@@ -66,3 +70,4 @@ Nous avons aussi besoin de manipulations avancées:
 - Garder grâce à un trigger une trace de toutes les modifications apportées à la table des utilisateurs. Ainsi, une table d'archive conservera la date de la mise à jour, l'identifiant de l'utilisateur concerné, l'ancienne valeur ainsi que la nouvelle.
 
 `CREATE OR REPLACE FUNCTION UserUpdateFunction() RETURNS TRIGGER AS $$ BEGIN INSERT INTO archives (updateDate, id_users, oldValue, newValue) VALUES (NOW(), NEW.Id_users,  JSON_BUILD_OBJECT('firstName', OLD.firstName, 'lastName', OLD.lastName, 'email', OLD.email), JSON_BUILD_OBJECT('firstName', NEW.firstName, 'lastName', NEW.lastName, 'email', NEW.email)); RETURN NEW; END; $$ LANGUAGE plpgsql; -- CREATE TRIGGER UserUpdateTrigger AFTER UPDATE ON users FOR EACH ROW EXECUTE FUNCTION UserUpdateFunction();`
+````
