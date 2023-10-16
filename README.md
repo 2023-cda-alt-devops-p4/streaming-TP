@@ -32,7 +32,7 @@ J'ai crée un container docker auquel j'ai relié une image ( postgres ) obtenu 
 
 Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
 
-````SQL
+```SQL
 
 - les titres et dates de sortie des films du plus récent au plus ancien
 
@@ -40,36 +40,50 @@ Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
 
 - les noms, prénoms et âges des acteurs/actrices de plus de 30 ans dans l'ordre alphabétique
 
-  SELECT lastName, firstName, DATE_PART('year', AGE(CURRENT_DATE, birthDate)) AS age FROM actors WHERE DATE_PART('year', AGE(CURRENT_DATE, birthDate)) > 30 ORDER BY lastName, firstName;
+  SELECT lastName, firstName, DATE_PART('year', AGE(CURRENT_DATE, birthDate))
+  AS age FROM actors WHERE DATE_PART('year', AGE(CURRENT_DATE, birthDate)) > 30 ORDER BY lastName, firstName;
 
 - la liste des acteurs/actrices principaux pour un film donné
-
 
     SELECT actors.lastName, actors.firstName
     FROM actors
     INNER JOIN plays_in ON actors.Id_actors = plays_in.Id_actors
     INNER JOIN movies ON plays_in.Id_movies = movies.Id_movies
-    WHERE movies.title = 'You Are God (Jestes Bogiem)' AND plays_in.role = 'main_actor';```
+    WHERE movies.title = 'You Are God (Jestes Bogiem)' AND plays_in.role = 'main_actor';
+
 - la liste des films pour un acteur/actrice donné
-  `SELECT movies.title FROM movies INNER JOIN plays_in ON movies.Id_movies = plays_in.Id_movies INNER JOIN actors ON plays_in.Id_actors = actors.Id_actors WHERE actors.lastName = 'Brenna';`
+  SELECT movies.title FROM movies INNER JOIN plays_in ON movies.Id_movies = plays_in.Id_movies INNER JOIN actors ON plays_in.Id_actors = actors.Id_actors WHERE actors.lastName = 'Brenna';
+
 - ajouter un film
-  `INSERT INTO movies (title, length, releaseDate) VALUES ('Pattaya', '01:37:00', '2016-02-24');`
+  INSERT INTO movies (title, length, releaseDate) VALUES ('Pattaya', '01:37:00', '2016-02-24');
+
 - ajouter un acteur/actrice
-  `INSERT INTO actors (lastName, firstName, birthDate) VALUES ('Cena', 'John', '1977-04-23');`
+  INSERT INTO actors (lastName, firstName, birthDate) VALUES ('Cena', 'John', '1977-04-23');
+
 - modifier un film
-  `UPDATE movies SET title = 'Nouveau titre', releaseDate = '2023-12-31' WHERE title = 'Boy Interrupted';`
+  UPDATE movies SET title = 'Nouveau titre', releaseDate = '2023-12-31' WHERE title = 'Boy Interrupted';
+
 - supprimer un acteur/actrice
-  `DELETE FROM actors WHERE lastName = 'Nom de l'acteur';`
+  DELETE FROM actors WHERE lastName = 'Nom de l'acteur';
+
 - afficher les 3 derniers acteurs/actrices ajouté(e)s
-  `SELECT lastName, firstName, birthDate FROM actors ORDER BY Id_actors DESC LIMIT 3;`
+  SELECT lastName, firstName, birthDate FROM actors ORDER BY Id_actors DESC LIMIT 3;
 
 Nous avons aussi besoin de manipulations avancées:
 
 - Lister grâce à une procédure stockée les films d'un réalisateur donné en paramètre
-  `BEGIN RETURN QUERY SELECT movies.title, movies.releaseDate FROM movies INNER JOIN directs ON movies.Id_movies = directs.Id_movies INNER JOIN directors ON directs.Id_directors = directors.Id_directors WHERE directors.lastName = directorName; END;`
-  `SELECT * FROM ListMoviesByDirector('Tann');`
 
-- Garder grâce à un trigger une trace de toutes les modifications apportées à la table des utilisateurs. Ainsi, une table d'archive conservera la date de la mise à jour, l'identifiant de l'utilisateur concerné, l'ancienne valeur ainsi que la nouvelle.
+  BEGIN RETURN QUERY SELECT movies.title, movies.releaseDate FROM movies INNER JOIN directs ON movies.
 
-`CREATE OR REPLACE FUNCTION UserUpdateFunction() RETURNS TRIGGER AS $$ BEGIN INSERT INTO archives (updateDate, id_users, oldValue, newValue) VALUES (NOW(), NEW.Id_users,  JSON_BUILD_OBJECT('firstName', OLD.firstName, 'lastName', OLD.lastName, 'email', OLD.email), JSON_BUILD_OBJECT('firstName', NEW.firstName, 'lastName', NEW.lastName, 'email', NEW.email)); RETURN NEW; END; $$ LANGUAGE plpgsql; -- CREATE TRIGGER UserUpdateTrigger AFTER UPDATE ON users FOR EACH ROW EXECUTE FUNCTION UserUpdateFunction();`
-````
+  Id_movies = directs.Id_movies INNER JOIN directors ON directs.Id_directors = directors.Id_directors WHERE directors.lastName = directorName; END;
+  SELECT * FROM ListMoviesByDirector('Tann');
+
+- Garder grâce à un trigger une trace de toutes les modifications apportées à la table des utilisateurs.
+Ainsi, une table d'archive conservera la date de la mise à jour, l'identifiant de l'utilisateur concerné, l'ancienne valeur ainsi que la nouvelle.
+
+CREATE OR REPLACE FUNCTION UserUpdateFunction() RETURNS TRIGGER AS $$ BEGIN
+INSERT INTO archives (updateDate, id_users, oldValue, newValue) VALUES (NOW(), NEW.Id_users,  JSON_BUILD_OBJECT('firstName', OLD.firstName, 'lastName', OLD.lastName, 'email', OLD.email),
+JSON_BUILD_OBJECT('firstName', NEW.firstName, 'lastName', NEW.lastName, 'email', NEW.email));
+RETURN NEW; END; $$ LANGUAGE plpgsql; -- CREATE TRIGGER UserUpdateTrigger
+AFTER UPDATE ON users FOR EACH ROW EXECUTE FUNCTION UserUpdateFunction();
+```
