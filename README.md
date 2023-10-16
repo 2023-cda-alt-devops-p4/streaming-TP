@@ -32,6 +32,7 @@ J'ai crée un container docker auquel j'ai relié une image ( postgres ) obtenu 
 
 Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
 
+````SQL
 - les titres et dates de sortie des films du plus récent au plus ancien
 
   SELECT title, releaseDate FROM movies ORDER BY releaseDate DESC;
@@ -42,7 +43,7 @@ Voici un jeu de requêtes minimal à fournir pour tester votre bdd :
 
 - la liste des acteurs/actrices principaux pour un film donné
 
-````SQL
+
     SELECT actors.lastName, actors.firstName
     FROM actors
     INNER JOIN plays_in ON actors.Id_actors = plays_in.Id_actors
